@@ -1,0 +1,161 @@
+// @ts-check
+import { test, expect } from '@playwright/test';
+
+// Test Case ID: SHP_01
+
+// Test Case Name: Add multiple items with filters or ordering
+
+// Test Descritpion: This test adds multiple different items and checks their appearence in the shopping cart,
+// while navigating we assert text that is suppose to appear.
+
+// Precondition: go to 'https://demowebshop.tricentis.com/'
+
+// Test steps: 
+// 1.  Go to the testing page
+// 2.  Assert the main title picture
+// 3.  Go to the computer section and assert that we have the correct subsection visible
+// 4.  Click the subsection
+// 5.  Navigate to the 1200 computer
+// 6.  Choose the 320 GB HDD
+// 7.  Add to the cart, assert the shopping cart in top right has 1 additional item
+// 8.  Navigate to Electronics subsection
+// 9.  Navigate to Phone section
+// 10. Order by price
+// 11. Assert that smartphone is last
+// 12. Select smartphone
+// 13. Add the smartphone to cart
+// 14. Assert that it has been added with a notification
+// 15. Go to book page
+// 16. Filter items by price over 50$
+// 17. Assert that 'Computing and Internet' book exists
+// 18. Navigate to the book
+// 19. Add the book
+// 20. Assert that it has been added with a notification
+// 21. Go to the Jewelry section
+// 22. Filter for Jewelry that is less than 500
+// 23. Assert that Black and & White Diamond Heart exists
+// 24. Add the Jewelry with a button to the cart
+// 25. Assert that a notification appeared
+// 26. Close the notification
+// 27. Select the "Create your own Jewelry option"
+// 28. Assert that pendant was not chosen
+// 29. Select gold (0.5 mm)
+// 30. Fill in chain length as 67
+// 31. Select pendant 'Heart' option
+// 32. Add the item to the cart
+// 33. Assert that it was added with a notification
+// 34. Assert items in the shopping cart
+
+test('addMultipleItems', async ({ page }) => {
+  // Go to the testing page
+  await page.goto('https://demowebshop.tricentis.com/');
+  
+  // Assert the main title picture
+  await expect(page.getByRole('link', { name: 'Tricentis Demo Web Shop' })).toBeVisible();
+  
+  // Go to the computer section and assert that we have the correct subsection visible
+  await page.getByRole('link', { name: 'Computers' }).first().click();
+  
+  // Click the subsection
+  await page.getByRole('link', { name: 'Desktops' }).nth(1).click();
+  
+  // Navigate to the 1200 computer
+  await page.getByRole('button', { name: 'Add to cart' }).nth(1).click();
+  
+  // Choose the 320 GB HDD
+  await page.getByText('320 GB').click();
+  
+  // Add to the cart, assert the shopping cart in top right has 1 additional item
+  await page.locator('#add-to-cart-button-16').click();
+  await expect(page.locator('#bar-notification')).toContainText('The product has been added to your shopping cart')
+  await expect(page.locator('#topcartlink')).toContainText('Shopping cart (1)');
+
+  // Navigate to Electronics subsection
+  await page.getByRole('link', { name: 'Electronics' }).first().click();
+  
+  // Navigate to Phone section
+  await page.getByRole('link', { name: 'Cell phones' }).nth(1).click();
+
+  // Order by price
+  await page.locator('#products-orderby').selectOption('https://demowebshop.tricentis.com/cell-phones?orderby=10');
+  await page.goto('https://demowebshop.tricentis.com/cell-phones?orderby=10');
+  
+  // Assert that smartphone is last
+  await expect(page.locator('.product-grid > div:nth-child(3)')).toContainText('Smartphone');
+  
+  // Select smartphone
+  await page.getByRole('link', { name: 'Smartphone', exact: true }).click();
+  
+  // Add the smartphone to cart
+  await page.locator('#add-to-cart-button-43').click();
+  
+  // Assert that it has been added with a notification
+  await expect(page.locator('#bar-notification')).toContainText('The product has been added to your shopping cart')
+  
+  // Go to book page
+  await page.getByRole('link', { name: 'Books' }).first().click();
+
+  // Filter items by price over 50$
+  await page.getByRole('link', { name: 'Under' }).click();
+  
+  // Assert that 'Computing and Internet' book exists
+  await expect(page.locator('body')).toContainText('Computing and Internet');
+
+  // Navigate to the book
+  await page.getByRole('link', { name: 'Picture of Computing and' }).click();;
+  
+  // Add the book
+  await page.locator('#add-to-cart-button-13').click();
+  
+  // Assert that it has been added with a notification
+  await expect(page.locator('#bar-notification')).toContainText('The product has been added to your shopping cart');
+  
+  // Go to the Jewelry section
+  await page.getByRole('link', { name: 'Jewelry' }).first().click();
+  
+  // Filter for Jewelry that is less than 500
+  await page.getByRole('link', { name: '- 500.00' }).click();
+  
+  // Assert that Black and & White Diamond Heart exists
+  await expect(page.locator('body')).toContainText('Black & White Diamond Heart');
+  
+  // Add the Jewelry with a button to the cart
+  await page.getByRole('button', { name: 'Add to cart' }).nth(1).click();
+  
+  // Assert that a notification appeared
+  await expect(page.getByRole('paragraph')).toContainText('The product has been added to your shopping cart');
+  
+  // Close the notification
+  await page.getByTitle('Close').click();
+  
+  // Select the "Create your own Jewelry option"
+  await page.getByRole('link', { name: 'Create Your Own Jewelry', exact: true }).click();
+  
+  // Assert that pendant was not chosen
+  await expect(page.getByRole('radio', { name: 'None' })).toBeChecked();
+  
+  // Select gold (0.5 mm)
+  await expect(page.locator('#product_attribute_71_9_15')).toHaveValue('45');
+  
+  // Fill in chain length as 67
+  await page.locator('#product_attribute_71_10_16').click();
+  await page.locator('#product_attribute_71_10_16').fill('67');
+  
+  // Select pendant 'Heart' option
+  await page.getByRole('radio', { name: 'Heart' }).check();
+  
+  // Add the item to the cart
+  await page.locator('#add-to-cart-button-71').click();
+  
+  // Assert that it was added with a notification
+  await expect(page.locator('#bar-notification')).toContainText('The product has been added to your shopping cart');
+  
+  
+  // assert items in the shopping cart
+  await expect(page.locator('#topcartlink')).toContainText('Shopping cart (5)');
+  await expect(page.locator('body')).toContainText('Processor: 2.5 GHz Intel Pentium Dual-Core E2200 [+15.00]RAM: 2 GBHDD: 320 GBOS: UbuntuSoftware: Microsoft Office [+50.00]');
+  await expect(page.locator('body')).toContainText('Smartphone');
+  await expect(page.locator('body')).toContainText('Computing and Internet');
+  await expect(page.locator('body')).toContainText('Black & White Diamond Heart');
+  await expect(page.locator('body')).toContainText('Material: Gold (0,5 mm)Length: 67Pendant: Heart');
+});
