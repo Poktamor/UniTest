@@ -46,6 +46,19 @@ import { test, expect } from '@playwright/test';
 // 33. Assert that it was added with a notification
 // 34. Assert items in the shopping cart
 
+// Test Data: Working page
+
+// Expected results: multiple items are added to the shopping cart successfuly 
+
+// Priority: High
+
+// Severity: High
+
+// Test type: Functional
+
+// Test Environment: Playwright
+
+// Test case owner: Ruslanas 
 test('addMultipleItems', async ({ page }) => {
   // Go to the testing page
   await page.goto('https://demowebshop.tricentis.com/');
