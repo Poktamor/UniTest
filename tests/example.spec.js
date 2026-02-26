@@ -59,6 +59,8 @@ import { test, expect } from '@playwright/test';
 // Test Environment: Playwright
 
 // Test case owner: Ruslanas 
+
+
 test('addMultipleItems', async ({ page }) => {
   // Go to the testing page
   await page.goto('https://demowebshop.tricentis.com/');
@@ -73,7 +75,17 @@ test('addMultipleItems', async ({ page }) => {
   await page.getByRole('link', { name: 'Desktops' }).nth(1).click();
   
   // Navigate to the 1200 computer
-  await page.getByRole('button', { name: 'Add to cart' }).nth(1).click();
+  for (const someElement of await page.locator('div.product-item').all()){
+	//> div.details > div.add-info > div.prices > span
+	const priceLocator = someElement.locator('div.details div.add-info div.prices span');
+	let str = await priceLocator.textContent();
+	let num = Number(str);
+	
+	if (num > 900){
+		someElement.click();
+		break;
+	}
+  }
   
   // Choose the 320 GB HDD
   await page.getByText('320 GB').click();
