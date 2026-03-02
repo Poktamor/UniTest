@@ -1,6 +1,5 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-
 // Test Case ID: SHP_01
 
 // Test Case Name: Add multiple items with filters or ordering
@@ -178,9 +177,71 @@ test('addMultipleItems', async ({ page }) => {
   
   // assert items in the shopping cart
   await expect(page.locator('#topcartlink')).toContainText('Shopping cart (5)');
+  
+  await page.getByRole('link', { name: 'Shopping cart (5)' }).click();
+  
   await expect(page.locator('body')).toContainText('Processor: 2.5 GHz Intel Pentium Dual-Core E2200 [+15.00]RAM: 2 GBHDD: 320 GBOS: UbuntuSoftware: Microsoft Office [+50.00]');
   await expect(page.locator('body')).toContainText('Smartphone');
   await expect(page.locator('body')).toContainText('Computing and Internet');
   await expect(page.locator('body')).toContainText('Black & White Diamond Heart');
   await expect(page.locator('body')).toContainText('Material: Gold (0,5 mm)Length: 67Pendant: Heart');
+  
+  await page.getByRole('row', { name: 'Picture of Build your own' }).getByRole('checkbox').check();
+  await page.getByRole('row', { name: 'Picture of Computing and' }).getByRole('checkbox').check();
+  await page.getByRole('row', { name: 'Picture of Create Your Own' }).getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Update shopping cart' }).click();
+  
+  
+  await expect(page.locator('body')).not.toContainText('Processor: 2.5 GHz Intel Pentium Dual-Core E2200 [+15.00]RAM: 2 GBHDD: 320 GBOS: UbuntuSoftware: Microsoft Office [+50.00]');
+  await expect(page.locator('body')).toContainText('Smartphone');
+  await expect(page.locator('body')).not.toContainText('Computing and Internet');
+  await expect(page.locator('body')).toContainText('Black & White Diamond Heart');
+  await expect(page.locator('body')).not.toContainText('Material: Gold (0,5 mm)Length: 67Pendant: Heart');
 });
+
+
+test('testPagination', async ({ page }) => { 
+	await page.setViewportSize({ width: 1920, height: 1080 });
+	await page.goto('https://demoqa.com/');
+	
+	await page.locator('a[href="/elements"]').click();
+	
+	await page.locator('a[href="/webtables"]').click();
+
+	for (let i = 0; i < 8;i++){
+		await page.locator('#addNewRecordButton').click();
+		await expect(page.getByRole('dialog')).toBeVisible();
+		await page.getByRole('textbox', { name: 'First Name' }).click();
+		await page.getByRole('textbox', { name: 'First Name' }).fill('randomname' + i);
+		await page.getByRole('textbox', { name: 'Last Name' }).click();
+		await page.getByRole('textbox', { name: 'Last Name' }).fill('randomLastName');
+		await page.getByRole('textbox', { name: 'name@example.com' }).click();
+		await page.getByRole('textbox', { name: 'name@example.com' }).fill('someEmail@gmail.com');
+		await page.getByRole('textbox', { name: 'Age' }).click();
+		await page.getByRole('textbox', { name: 'Age' }).fill('20');
+		await page.getByRole('textbox', { name: 'Salary' }).click();
+		await page.getByRole('textbox', { name: 'Salary' }).fill('100');
+		await page.getByRole('textbox', { name: 'Department' }).click();
+		await page.getByRole('textbox', { name: 'Department' }).fill('None');
+		await page.getByRole('button', { name: 'Submit' }).click();
+	}
+	
+	await expect(page.getByRole('strong')).toContainText('1 of 2');
+	
+	await page.getByRole('button', { name: 'Next' }).click();
+	
+	await expect(page.getByRole('strong')).toContainText('2 of 2');
+	
+	await page.locator('#delete-record-11').click();
+	
+	await expect(page.getByRole('strong')).toContainText('1 of 1');
+})
+
+test('testProgressBar', async ({ page }) => { 
+	await page.setViewportSize({ width: 1920, height: 1080 });
+	await page.goto('https://demoqa.com/progress-bar');
+	
+	await page.locator('button#startStopButton').click();
+	
+	await expect(page.locator('div.progress-bar')).toContainText('100%', { timeout: 20_000 });
+})
