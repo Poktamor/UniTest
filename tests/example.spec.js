@@ -306,7 +306,7 @@ test('getJsonFile', async ({ page }) => {
   
   const qty = await page.locator('.cart-qty').textContent();
   
-  if (qty > 0 ){
+  if (qty[1] > 0 ){
 	await page.locator('.cart-qty').click();
 	  
 	// Locate all cart rows and check their remove checkbox
