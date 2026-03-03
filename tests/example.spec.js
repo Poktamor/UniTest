@@ -244,4 +244,22 @@ test('testProgressBar', async ({ page }) => {
 	await page.locator('button#startStopButton').click();
 	
 	await expect(page.locator('div.progress-bar')).toContainText('100%', { timeout: 20_000 });
+	
+	await page.locator('button#resetButton').click();
+	
+	await expect(page.locator('div.progress-bar')).toContainText('0%');
+})
+
+test('testDynamicProperties', async ({ page }) => { 
+	await page.setViewportSize({ width: 1920, height: 1080 });
+	await page.goto('https://demoqa.com/dynamic-properties');
+	
+	await expect(page.locator('button#enableAfter')).not.toBeEnabled();
+	await expect(page.locator('button#colorChange')).not.toHaveClass('mt-4 text-danger btn btn-primary');
+	await expect(page.locator('button#visibleAfter')).toBeHidden();
+	
+	
+	await expect(page.locator('button#enableAfter')).toBeEnabled({ timeout: 6_000 });
+	await expect(page.locator('button#colorChange')).toHaveClass('mt-4 text-danger btn btn-primary');
+	await expect(page.locator('button#visibleAfter')).toBeVisible();
 })
