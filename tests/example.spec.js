@@ -242,7 +242,9 @@ test('testPagination', async ({ page }) => {
 
 test('testProgressBar', async ({ page }) => { 
 	await page.setViewportSize({ width: 1920, height: 1080 });
-	await page.goto('https://demoqa.com/progress-bar');
+	await page.goto('https://demoqa.com/progress-bar', {
+		waitUntil: 'domcontentloaded'
+	});
 	
 	await page.locator('button#startStopButton').click();
 	
@@ -304,7 +306,7 @@ test('getJsonFile', async ({ page }) => {
   
   const qty = await page.locator('.cart-qty').textContent();
   
-  if (qty[1] > 0 ){
+  if (qty > 0 ){
 	await page.locator('.cart-qty').click();
 	  
 	// Locate all cart rows and check their remove checkbox
@@ -317,7 +319,7 @@ test('getJsonFile', async ({ page }) => {
 		await checkbox.check(); 
 	}
 	await page.locator('.update-cart-button').click();
-	expect(page.locator('.cart-qty')).toContainText("(0)");
+	await expect(page.locator('.cart-qty')).toContainText("(0)");
   }
   
   // Go to the computer section and assert that we have the correct subsection visible
