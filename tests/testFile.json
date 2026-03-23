@@ -1,4 +1,10 @@
-{
-	"gmail": "someGmail@someGmail.com",
-	"password" : "123654"
-}
+[
+	{
+		"gmail": "someGmail@someGmail.com",
+		"password" : "123654"
+	},
+	{
+		"gmail": "someOtherFunnyGmail@gmail.com",
+		"password" : "456321"
+	}
+]

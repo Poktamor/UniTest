@@ -76,15 +76,17 @@ test('addMultipleItems', async ({ page }) => {
   // Click the subsection
   await page.getByRole('link', { name: 'Desktops' }).nth(1).click();
   
+  await page.locator('div.product-item').first().waitFor({ state: 'visible' });
+  
   // Navigate to the 1200 computer
   for (const someElement of await page.locator('div.product-item').all()){
-	//> div.details > div.add-info > div.prices > span
+	  
 	const priceLocator = someElement.locator('div.details div.add-info div.prices span');
 	let str = await priceLocator.textContent();
 	let num = Number(str);
 	
 	if (num > 900){
-		someElement.click();
+		await someElement.click();
 		break;
 	}
   }
@@ -246,14 +248,14 @@ test('testProgressBar', async ({ page }) => {
 		waitUntil: 'domcontentloaded'
 	});
 	
-	await page.locator('button#startStopButton').click();
-	
-	await expect(page.locator('div.progress-bar')).toContainText('100%', { timeout: 20_000 });
-	
-	await page.locator('button#resetButton').click();
-	
-	await expect(page.locator('div.progress-bar')).toContainText('0%');
-})
+	await page.locator('#startStopButton').click();
+
+	await page.locator('.progress-bar[aria-valuenow="100"]').waitFor();
+
+	await page.locator('#resetButton').click();
+
+	await expect(page.locator('.progress-bar')).toContainText('0%');
+});
 
 test('testDynamicProperties', async ({ page }) => { 
 	await page.setViewportSize({ width: 1920, height: 1080 });
@@ -262,9 +264,12 @@ test('testDynamicProperties', async ({ page }) => {
 	await expect(page.locator('button#enableAfter')).not.toBeEnabled();
 	await expect(page.locator('button#colorChange')).not.toHaveClass('mt-4 text-danger btn btn-primary');
 	await expect(page.locator('button#visibleAfter')).toBeHidden();
+
+	await page
+    .getByRole('button', { name: 'Visible After 5 Seconds' })
+    .waitFor({ state: 'visible' });
 	
-	
-	await expect(page.locator('button#enableAfter')).toBeEnabled({ timeout: 6_000 });
+	await expect(page.locator('#enableAfter')).toBeEnabled();
 	await expect(page.locator('button#colorChange')).toHaveClass('mt-4 text-danger btn btn-primary');
 	await expect(page.locator('button#visibleAfter')).toBeVisible();
 })
@@ -286,18 +291,17 @@ test('getJsonFile', async ({ page }) => {
   // Example assertion (adjust depending on your JSON structure)
   expect(jsonData).toBeDefined();
   
-  
-  
-  
-  
+  for (let i = 0; i < jsonData.length; i++)
+  {
+	  
   // Go to the testing page
   await page.goto('https://demowebshop.tricentis.com/');
   
   await page.locator('a[href="/login"]').click();
   
-  await page.locator('#Email').fill(jsonData.gmail);
+  await page.locator('#Email').fill(jsonData[i].gmail);
   
-  await page.locator('#Password').fill(jsonData.password);
+  await page.locator('#Password').fill(jsonData[i].password);
   
   await page.locator('.login-button').click();
   
@@ -309,6 +313,7 @@ test('getJsonFile', async ({ page }) => {
   if (qty[1] > 0 ){
 	await page.locator('.cart-qty').click();
 	  
+	await page.locator('tr.cart-item-row').first().waitFor({ state: 'visible' });
 	// Locate all cart rows and check their remove checkbox
 	const cartRows = page.locator('tr.cart-item-row');
 	
@@ -452,4 +457,9 @@ test('getJsonFile', async ({ page }) => {
   await expect(page.locator('body')).not.toContainText('Computing and Internet');
   await expect(page.locator('body')).toContainText('Black & White Diamond Heart');
   await expect(page.locator('body')).not.toContainText('Material: Gold (0,5 mm)Length: 67Pendant: Heart');
+  
+  await page.locator('a[href="/logout"]').click();
+  }
+  
+  
 });
